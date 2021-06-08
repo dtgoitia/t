@@ -1,44 +1,25 @@
-import json
 import logging
+import os
 import sys
 from pathlib import Path
 from typing import List
 
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import Completer, FuzzyWordCompleter
+from toggl.TogglPy import Toggl
 
-from src.types import EntryChoice, JsonDict
-
-CONFIG_PATH = Path("~/.config/t/entries.json").expanduser()
-
-
-def read_json(path: Path) -> JsonDict:
-    with path.open("r") as f:
-        content = json.load(f)
-
-    return content
+from src.config import AppConfig, get_config
+from src.types import EntryChoice, TogglProjectId
 
 
-def read_entry_choices(path: Path) -> List[EntryChoice]:
-    content = read_json(path=path)
-
+def get_entry_choices(config: AppConfig) -> List[EntryChoice]:
     choices: List[EntryChoice] = []
-    for project, names in content["entries_per_project"].items():
-        for name in names:
-            choice = EntryChoice(name=name, project=project)
+    for project in config.projects:
+        for name in project.entries:
+            choice = EntryChoice(name=name, project=project.name)
             choices.append(choice)
 
     return choices
-
-
-def abort_if_config_file_does_not_exist(path: Path) -> None:
-    if path.exists():
-        return
-
-    msg = f"Please create config file at: {path}"
-    logging.error(msg)
-    print(msg)
-    sys.exit(1)
 
 
 def configure_completer(choices: List[EntryChoice]) -> Completer:
@@ -53,17 +34,46 @@ def parse_selected(raw: str) -> EntryChoice:
     return selected
 
 
+def get_toggl_api_token() -> str:
+    # Get API token at https://track.toggl.com/profile
+    try:
+        token = os.environ["TOGGL_API_TOKEN"]
+    except KeyError:
+        msg = "TOGGL_API_TOKEN environment variable not found, please set it"
+        logging.error(msg)
+        print(msg)
+        sys.exit(1)
+
+    return token
+
+
+def get_toggl_project_id(selected: EntryChoice, config: AppConfig) -> TogglProjectId:
+    project = [proj for proj in config.projects if proj.name == selected.project][0]
+
+    return project.id
+
+
 def start_timer_in_toggl_cmd() -> None:
-    abort_if_config_file_does_not_exist(path=CONFIG_PATH)
+    config = get_config()
+    token = get_toggl_api_token()
 
     logging.info("Reading toggl entry choices from config file...")
-    entry_choices = read_entry_choices(path=CONFIG_PATH)
+    entry_choices = get_entry_choices(config=config)
     completer = configure_completer(choices=entry_choices)
 
     logging.info("Prompting user to choose a toggl entry...")
     raw_selected_choice = prompt("Toggl: ", completer=completer)
     selected = parse_selected(raw_selected_choice)
-    print(selected)
+    logging.info(f"User selected {selected}")
+
+    logging.info("Finding corresponding project ID...")
+    project_id = get_toggl_project_id(selected, config=config)
+    logging.info(f"Project ID: {project_id}")
+
+    logging.info(f"Starting a toggl timer with {selected}...")
+    toggl = Toggl()
+    toggl.setAPIKey(token)
+    _ = toggl.startTimeEntry(selected.name, project_id)
 
 
 if __name__ == "__main__":
