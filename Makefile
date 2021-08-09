@@ -25,7 +25,7 @@ dev-requirements:
 install:
 	pip install -r requirements.txt
 
-dev-install: install
+dev-install:
 	pip install -r dev-requirements.txt
 
 lint:

@@ -6,7 +6,7 @@ attrs==21.2.0
     # via pytest
 backcall==0.2.0
     # via ipython
-black==21.5b2
+black==21.7b0
     # via -r dev-requirements.in
 click==8.0.1
     # via
@@ -22,11 +22,11 @@ iniconfig==1.1.1
     # via pytest
 ipdb==0.13.9
     # via -r dev-requirements.in
+ipython==7.26.0
+    # via ipdb
 ipython-genutils==0.2.0
     # via traitlets
-ipython==7.24.1
-    # via ipdb
-isort==5.8.0
+isort==5.9.3
     # via -r dev-requirements.in
 jedi==0.18.0
     # via ipython
@@ -34,29 +34,29 @@ matplotlib-inline==0.1.2
     # via ipython
 mccabe==0.6.1
     # via flake8
+mypy==0.910
+    # via -r dev-requirements.in
 mypy-extensions==0.4.3
     # via
     #   black
     #   mypy
-mypy==0.812
-    # via -r dev-requirements.in
-packaging==20.9
+packaging==21.0
     # via pytest
 parso==0.8.2
     # via jedi
-pathspec==0.8.1
+pathspec==0.9.0
     # via black
-pep517==0.10.0
+pep517==0.11.0
     # via pip-tools
 pexpect==4.8.0
     # via ipython
 pickleshare==0.7.5
     # via ipython
-pip-tools==6.1.0
+pip-tools==6.2.0
     # via -r dev-requirements.in
 pluggy==0.13.1
     # via pytest
-prompt-toolkit==3.0.18
+prompt-toolkit==3.0.19
     # via
     #   -r requirements.in
     #   ipython
@@ -74,24 +74,29 @@ pyparsing==2.4.7
     # via packaging
 pytest==6.2.4
     # via -r dev-requirements.in
-regex==2021.4.4
+regex==2021.8.3
     # via black
+togglpy==0.1.2
+    # via -r requirements.in
 toml==0.10.2
     # via
-    #   black
     #   ipdb
-    #   pep517
+    #   mypy
     #   pytest
+tomli==1.2.1
+    # via
+    #   black
+    #   pep517
 traitlets==5.0.5
     # via
     #   ipython
     #   matplotlib-inline
-typed-ast==1.4.3
-    # via mypy
 typing-extensions==3.10.0.0
     # via mypy
 wcwidth==0.2.5
     # via prompt-toolkit
+wheel==0.36.2
+    # via pip-tools
 
 # The following packages are considered to be unsafe in a requirements file:
 # pip
