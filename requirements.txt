@@ -1,6 +1,6 @@
 prompt-toolkit==3.0.18
     # via -r requirements.in
-togglpy==0.1.1
+togglpy==0.1.2
     # via -r requirements.in
 wcwidth==0.2.5
     # via prompt-toolkit
