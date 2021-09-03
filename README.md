@@ -1,43 +1,42 @@
-[Freeze](https://docs.python-guide.org/shipping/freezing/#id1) your Python code to distribute a binary.
+## Set up
 
-Install `pyenv` Python version with `enable-shared` option [1][1]:
+* Install:
 
-```fish
-PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install 3.9.5
-```
+  ```shell
+  git clone git@github.com:dtgoitia/t.git
+  cd t/
 
-Build with PyInstaller:
+  # Create and activate Python virtual environment
+  python3 -m venv .venv
+  . .venv/bin/activate
 
-```shell
-make build
-```
+  # install repo dependencies locally
+  make install
+  ```
 
-:( the single-file mode is super slow because it forces PyInstaller to unpack all the files in a temp folder before executing... what a crap..
+* Configuration (mandatory):
 
-Trying with Nuitka:
+  At `~/.config/t/config.jsonc`:
 
-```shell
-pip install Nuitka
-python -m nuitka --standalone main.py
-# Nothing installed, got a linker error
-python -m nuitka --jobs=4 --standalone main.py
-# Same error
-python -m nuitka --jobs=4 --show-scons --follow-imports main.py
-# Compiled right, but I forgot to make it 'standalone'
-python -m nuitka --jobs=8 --show-scons --standalone --follow-imports main.py
-# Same error
-PYTHON_CONFIGURE_OPTS="--enable-shared" pyenv install 3.9.5
-~/.pyenv/versions/3.9.5/bin/python -m venv .venv && . .venv/bin/activate.fish
-pip install -r requirements.txt
-python -m nuitka --jobs=8 --show-scons --standalone --follow-imports main.py
-# No error!
-./main.dist/main
-# I forgot a dependency (typing.List)
-python -m nuitka --jobs=8 --show-scons --standalone --follow-imports main.py
-./main.dist/main
-# Works, but slow startup time
-python -m nuitka --jobs=8 --show-scons --onefile --follow-imports main.py
-# FATAL: Error, unsupported OS for onefile 'Darwin'
-```
+  ```json
+  {
+    "projects": [
+      {
+        "id": 1234,
+        "name": "Name of the project",
+        "entries": ["Task 1", "Task 2"]
+      }
+    ]
+  }
+  ```
 
-[1]: https://pyinstaller.readthedocs.io/en/stable/development/venv.html "?"
+* Credentials (mandatory):
+
+  At `~/.config/t/credentials.jsonc`:
+
+  ```jsonc
+  {
+    // Get API token at https://track.toggl.com/profile
+    "toggle_api_token": "_____INSERT_API_TOKEN_HERE_____"
+  }
+  ```

@@ -55,7 +55,7 @@ def get_toggl_project_id(selected: EntryChoice, config: AppConfig) -> TogglProje
 
 def start_timer_in_toggl_cmd() -> None:
     config = get_config()
-    token = get_toggl_api_token()
+    token = config.api_token
 
     logging.info("Reading toggl entry choices from config file...")
     entry_choices = get_entry_choices(config=config)
