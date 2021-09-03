@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import List
 
-from src.filesystem import read_json
+from src.filesystem import read_json_with_comments
 from src.types import JsonDict, Project
 
 CONFIG_PATH = Path("~/.config/t/config.json").expanduser()
@@ -52,7 +52,7 @@ def parse_config(raw: JsonDict) -> AppConfig:
 def get_config() -> AppConfig:
     abort_if_config_file_does_not_exist(path=CONFIG_PATH)
 
-    raw_config = read_json(path=CONFIG_PATH)
+    raw_config = read_json_with_comments(path=CONFIG_PATH)
     config = parse_config(raw_config)
 
     return config
