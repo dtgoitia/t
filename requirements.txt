@@ -1,4 +1,4 @@
-prompt-toolkit==3.0.18
+prompt-toolkit==3.0.20
     # via -r requirements.in
 togglpy==0.1.2
     # via -r requirements.in
