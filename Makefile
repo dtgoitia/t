@@ -1,4 +1,4 @@
-run: run_pipeline report
+IMAGE_NAME := t
 
 clean_logs:
 	rm -rf logs
@@ -42,3 +42,21 @@ format:
 
 test:
 	pytest tests -vv
+
+build:
+	sudo podman build \
+		--file=./Containerfile \
+		--tag $(IMAGE_NAME) \
+		.
+
+delete-image:
+	sudo podman rmi $(IMAGE_NAME)
+
+rebuild: delete-image build
+
+run:
+	sudo podman run \
+		--interactive --tty \
+		--rm \
+		--mount type=bind,source=$(HOME)/.config/t,target=/config \
+		$(IMAGE_NAME)

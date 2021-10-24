@@ -1,4 +1,5 @@
 import logging
+import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List
@@ -6,7 +7,7 @@ from typing import List
 from src.filesystem import abort_if_file_does_not_exist, read_json_with_comments
 from src.types import JsonDict, Project
 
-DOTFILES_DIR = Path("~/.config/t").expanduser()
+DOTFILES_DIR = Path(os.environ.get("CONFIG_DIR_PATH") or "~/.config/t").expanduser()
 CONFIG_PATH = DOTFILES_DIR / "config.jsonc"
 CREDENTIALS_PATH = DOTFILES_DIR / "credentials.jsonc"
 
