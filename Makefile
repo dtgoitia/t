@@ -24,9 +24,11 @@ dev-requirements:
 
 install:
 	pip install -r requirements.txt
+	./scripts/patch-togglpy.py
 
 dev-install:
 	pip install -r dev-requirements.txt
+	./scripts/patch-togglpy.py
 
 lint:
 	flake8
