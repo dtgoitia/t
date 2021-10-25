@@ -1,15 +1,15 @@
+import datetime
 import logging
 import os
 import sys
-from pathlib import Path
 from typing import List
 
 from prompt_toolkit import prompt
 from prompt_toolkit.completion import Completer, FuzzyWordCompleter
 from toggl.TogglPy import Toggl
 
-from src.config import AppConfig, get_config
-from src.types import EntryChoice, TogglProjectId
+from src.config import AppConfig, TogglApiToken, get_config
+from src.types import EntryChoice, JsonDict, TogglProjectId, TogglProjectName
 
 
 def get_entry_choices(config: AppConfig) -> List[EntryChoice]:
@@ -53,9 +53,21 @@ def get_toggl_project_id(selected: EntryChoice, config: AppConfig) -> TogglProje
     return project.id
 
 
+def get_project_name(project_id: TogglProjectId, config: AppConfig) -> TogglProjectName:
+    project = [proj for proj in config.projects if proj.id == project_id][0]
+
+    return project.name
+
+
+def get_toggl_client(token: TogglApiToken) -> Toggl:
+    toggl = Toggl()
+    toggl.setAPIKey(token)
+    return toggl
+
+
 def start_timer_in_toggl_cmd() -> None:
     config = get_config()
-    token = config.api_token
+    toggl = get_toggl_client(token=config.api_token)
 
     logging.info("Reading toggl entry choices from config file...")
     entry_choices = get_entry_choices(config=config)
@@ -71,16 +83,40 @@ def start_timer_in_toggl_cmd() -> None:
     logging.info(f"Project ID: {project_id}")
 
     logging.info(f"Starting a toggl timer with {selected}...")
-    toggl = Toggl()
-    toggl.setAPIKey(token)
     _ = toggl.startTimeEntry(selected.name, project_id)
 
 
-if __name__ == "__main__":
-    log_file = Path(f"{__file__}.log")
-    log_format = "%(asctime)s:%(levelname)s:%(filename)s:%(lineno)d:%(message)s"
-    logging.basicConfig(filename=log_file, level=logging.DEBUG, format=log_format)
+def format_time_entry_response(data: JsonDict, config: AppConfig) -> str:
+    project_id = data["pid"]
+    project = get_project_name(project_id=project_id, config=config)
+    description = data["description"]
+    start = datetime.datetime.fromisoformat(data["start"])
+    now = datetime.datetime.now(datetime.timezone.utc)
+    duration_in_secs = round((now - start).total_seconds())
+    duration = datetime.timedelta(seconds=duration_in_secs)
+    return f"{description} @ {project}  {duration}"
 
-    logging.info("Command started...")
-    start_timer_in_toggl_cmd()
-    logging.info("Finished command")
+
+def show_running_entry():
+    config = get_config()
+    toggl = get_toggl_client(token=config.api_token)
+
+    data = toggl.currentRunningTimeEntry().get("data")
+    if not data:
+        print("No time entry running")
+        return
+
+    print(format_time_entry_response(data, config))
+
+
+def stop_running_entry():
+    config = get_config()
+    toggl = get_toggl_client(token=config.api_token)
+
+    data = toggl.currentRunningTimeEntry().get("data")
+    if not data:
+        print("No time entry running")
+        return
+
+    entry_id = data["id"]
+    toggl.stopTimeEntry(entry_id)

@@ -1,4 +1,6 @@
-prompt-toolkit==3.0.20
+click==8.0.3
+    # via -r requirements.in
+prompt-toolkit==3.0.21
     # via -r requirements.in
 togglpy==0.1.2
     # via -r requirements.in
