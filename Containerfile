@@ -14,13 +14,15 @@ FROM stage0 as release
 ENV CONFIG_DIR_PATH "/config"
 
 COPY ./requirements.txt /app/requirements.txt
+COPY ./scripts/patch-togglpy.py /scripts/patch-togglpy.py
 RUN pip install \
       --no-cache-dir \
       -r /app/requirements.txt \
+    && /scripts/patch-togglpy.py \
     && rm -rf /app/requirements.txt
 
 COPY ./src /app/src
 
-ENTRYPOINT ["python", "-m", "src.main"]
+ENTRYPOINT ["python", "-m", "src.cli"]
 
 # TODO: add development stage?

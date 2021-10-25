@@ -1,4 +1,5 @@
-IMAGE_NAME := t
+VERSION:=$(shell cat VERSION)
+IMAGE_TAG:=$(shell cat IMAGE_NAME):$(VERSION)
 
 clean_logs:
 	rm -rf logs
@@ -26,6 +27,12 @@ install:
 	pip install -r requirements.txt
 	./scripts/patch-togglpy.py
 
+install-container: build
+	./scripts/install-container-wrapper.py
+
+uninstall-container: delete-all-images
+	./scripts/uninstall-container-wrapper.py
+
 dev-install:
 	pip install -r dev-requirements.txt
 	./scripts/patch-togglpy.py
@@ -46,17 +53,21 @@ test:
 build:
 	sudo podman build \
 		--file=./Containerfile \
-		--tag $(IMAGE_NAME) \
+		--tag $(IMAGE_TAG) \
 		.
 
-delete-image:
-	sudo podman rmi $(IMAGE_NAME)
+delete-current-image:
+	sudo podman rmi $(IMAGE_TAG) -f
 
-rebuild: delete-image build
+delete-all-images:
+	images_to_delete=$(shell python ./scripts/find-podman-images.py); \
+	sudo podman rmi $$images_to_delete -f
+
+rebuild: delete-current-image build
 
 run:
 	sudo podman run \
 		--interactive --tty \
 		--rm \
 		--mount type=bind,source=$(HOME)/.config/t,target=/config \
-		$(IMAGE_NAME)
+		$(IMAGE_TAG)
