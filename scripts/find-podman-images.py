@@ -28,7 +28,7 @@ def main() -> None:
     image_name = (Path(__file__).parent.parent / "IMAGE_NAME").read_text().strip()
     repository = f"localhost/{image_name}"
 
-    process = subprocess.run(["sudo", "podman", "images"], capture_output=True)
+    process = subprocess.run(["podman", "images"], capture_output=True)
     lines = process.stdout.decode("utf-8").strip().split("\n")
 
     images = [parse_podman_image_stdout(line) for line in lines[1:]]

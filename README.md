@@ -1,17 +1,16 @@
 ## Set up
 
+* Prerequisites:
+
+  - `podman` must be installed and [configured][1]
+
 * Install:
 
   ```shell
   git clone git@github.com:dtgoitia/t.git
   cd t/
 
-  # Create and activate Python virtual environment
-  python3 -m venv .venv
-  . .venv/bin/activate
-
-  # install repo dependencies locally
-  make install
+  make install-container
   ```
 
 * Configuration (mandatory):
@@ -40,3 +39,7 @@
     "toggle_api_token": "_____INSERT_API_TOKEN_HERE_____"
   }
   ```
+
+<!-- External references -->
+
+[1]: https://github.com/containers/podman/blob/main/docs/tutorials/rootless_tutorial.md#etcsubuid-and-etcsubgid-configuration "Set up sub user IDs and sub group IDs"

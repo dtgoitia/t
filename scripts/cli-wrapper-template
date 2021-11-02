@@ -27,7 +27,7 @@ check_cmd_in_path(){
 check_cmd_in_path podman
 
 # Set up mounted volumes, environment, and run our containerized command
-exec sudo podman run \
+exec podman run \
 		--interactive --tty \
 		--rm \
 		--mount type=bind,source="$HOME/.config/t",target=/config \

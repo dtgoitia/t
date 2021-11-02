@@ -51,22 +51,22 @@ test:
 	pytest tests -vv
 
 build:
-	sudo podman build \
+	podman build \
 		--file=./Containerfile \
 		--tag $(IMAGE_TAG) \
 		.
 
 delete-current-image:
-	sudo podman rmi $(IMAGE_TAG) -f
+	podman rmi $(IMAGE_TAG) -f
 
 delete-all-images:
 	images_to_delete=$(shell python ./scripts/find-podman-images.py); \
-	sudo podman rmi $$images_to_delete -f
+	podman rmi $$images_to_delete -f
 
 rebuild: delete-current-image build
 
 run:
-	sudo podman run \
+	podman run \
 		--interactive --tty \
 		--rm \
 		--mount type=bind,source=$(HOME)/.config/t,target=/config \
